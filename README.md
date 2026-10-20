@@ -113,6 +113,8 @@ python -m unittest discover -s tests -v
 
 `demo/mock-pass/`、`demo/mock-rework/`、`demo/mock-fail/` 是不调用模型的三条固定路径，用来证明条件边、返工和失败状态可重复。
 
+**静态查看页**：打开 [`demo/index.html`](demo/index.html) 可以进入各次运行的可视化报告；报告由 `scripts/make_report.py` 从 JSON/JSONL 生成，不是工作流的一部分，工作流本身没有网页界面。
+
 ### 人工核验
 
 以下事实已回到源码逐行核对（其余事实可在 `analysis.json` 中按 `file + lines` 复查）：
@@ -143,7 +145,8 @@ docgen-workflow/
 ├─ prompts/              # 三个 Agent 的提示词
 ├─ examples/todo_cli/    # 演示输入项目（只读）
 ├─ tests/                # 25 个 unittest
-├─ demo/                 # 真实运行 + Mock 三场景产物
+├─ scripts/make_report.py # 从运行产物生成静态 HTML 查看页
+├─ demo/                 # 真实运行 + Mock 三场景产物 + index.html
 ├─ DESIGN.md             # 设计文档
 ├─ .env.example
 └─ requirements.txt      # 无第三方依赖

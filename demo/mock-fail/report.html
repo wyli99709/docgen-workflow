@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocGen Workflow — 20261020-085919</title>
+<style>
+    :root { color-scheme: light; --bg:#f6f7fb; --card:#fff; --text:#18202f;
+            --muted:#667085; --line:#e4e7ec; --green:#067647; --red:#b42318;
+            --amber:#b54708; --blue:#175cd3; }
+    * { box-sizing: border-box; }
+    body { margin:0; padding:32px; background:var(--bg); color:var(--text);
+           font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; }
+    .wrap { max-width:1180px; margin:0 auto; }
+    h1 { margin:0 0 4px; font-size:26px; }
+    h2 { margin:30px 0 12px; font-size:19px; }
+    h3 { margin:0 0 10px; font-size:15px; }
+    .muted { color:var(--muted); }
+    .card, .round, .issue { background:var(--card); border:1px solid var(--line); border-radius:10px; }
+    .card { padding:18px 20px; }
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:18px; }
+    .stat { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+    .stat b { display:block; font-size:22px; }
+    .status { display:inline-block; padding:3px 10px; border-radius:999px; font-weight:600; }
+    .status.passed { background:#ecfdf3; color:var(--green); }
+    .status.failed { background:#fef3f2; color:var(--red); }
+    .flow { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+    .node { background:#eff8ff; color:var(--blue); border:1px solid #b2ddff; border-radius:8px; padding:6px 10px; }
+    .node.revise { background:#fffaeb; color:var(--amber); border-color:#fedf89; }
+    .arrow { color:var(--muted); }
+    table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+    th, td { text-align:left; vertical-align:top; padding:9px 11px; border-bottom:1px solid var(--line); }
+    th { background:#f9fafb; font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+    tr:last-child td { border-bottom:0; }
+    code { background:#f2f4f7; padding:1px 5px; border-radius:4px; font-size:12px; }
+    .round { padding:16px 18px; margin-bottom:12px; }
+    .issue { padding:12px 14px; margin-top:10px; border-left:4px solid var(--line); }
+    .issue.high { border-left-color:var(--red); }
+    .issue.medium { border-left-color:var(--amber); }
+    .issue.low { border-left-color:var(--blue); }
+    .issue p { margin:6px 0; }
+    .badge { display:inline-block; min-width:54px; text-align:center; padding:1px 7px; margin-right:8px;
+             border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase; }
+    .badge.high { background:#fef3f2; color:var(--red); }
+    .badge.medium { background:#fffaeb; color:var(--amber); }
+    .badge.low { background:#eff8ff; color:var(--blue); }
+    .links a { display:inline-block; margin:0 14px 8px 0; color:var(--blue); }
+    .note { margin-top:10px; color:var(--muted); font-size:12px; }
+    </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>文档生成 Workflow · 运行报告</h1>
+  <p class="muted">run_id: 20261020-085919 · 模型: mock:fail</p>
+  <p><span class="status failed">needs_manual_review</span>
+     <span class="muted"> · 输入: examples/todo_cli</span></p>
+
+  <div class="stats">
+    <div class="stat"><span class="muted">事实</span><b>14</b></div>
+    <div class="stat"><span class="muted">草稿版本</span><b>2</b></div>
+    <div class="stat"><span class="muted">返工次数</span><b>1</b></div>
+    <div class="stat"><span class="muted">模型调用</span><b>11</b></div>
+    <div class="stat"><span class="muted">工具调用</span><b>6</b></div>
+    <div class="stat"><span class="muted">总 token</span><b>—</b></div>
+  </div>
+
+  <h2>执行路径</h2>
+  <div class="flow"><span class="node">1. 扫描/AST</span><span class="arrow">→</span><span class="node">2. 分析 Agent</span><span class="arrow">→</span><span class="node">3. 文档 Agent</span><span class="arrow">→</span><span class="node">4. 审核 Agent</span><span class="arrow">→</span><span class="node">5. 规则校验</span><span class="arrow">→</span><span class="node revise">6. 返工</span><span class="arrow">→</span><span class="node">7. 文档 Agent</span><span class="arrow">→</span><span class="node">8. 审核 Agent</span><span class="arrow">→</span><span class="node">9. 规则校验</span><span class="arrow">→</span><span class="node">10. 失败保存</span></div>
+
+  <h2>审核与返工</h2>
+  <div class="round"><h3>review · draft v1 · revise</h3>
+    <div class="issue medium">
+      <div class="issue-head"><span class="badge medium">medium</span><strong>安装章节缺少 Python 版本要求</strong></div>
+      <p><b>问题：</b>pyproject.toml 声明 requires-python &gt;= 3.11，但草稿的安装章节只说明无需第三方依赖，没有告诉用户最低 Python 版本。</p>
+      <p><b>证据：</b><code>pyproject.toml:9 声明 requires-python = &quot;&gt;=3.11&quot;</code></p>
+      <p><b>建议：</b>在安装章节补充“需要 Python 3.11 或更新版本”，并引用事实 F8。</p>
+    </div>
+    </div><div class="round"><h3>rules · draft v1</h3><p class="muted">无问题。</p></div><div class="round"><h3>review · draft v2 · revise</h3>
+    <div class="issue high">
+      <div class="issue-head"><span class="badge high">high</span><strong>安装章节的 pip install todo-cli 命令</strong></div>
+      <p><b>问题：</b>事实清单和 pyproject.toml 都没有提供 pip 安装命令或发布包信息；该命令没有源码证据。</p>
+      <p><b>证据：</b><code>pyproject.toml 只声明项目元数据，未提供 scripts 或发布配置</code></p>
+      <p><b>建议：</b>删除该安装命令，或先在事实清单中补充可核验的安装方式。</p>
+    </div>
+    </div><div class="round"><h3>rules · draft v2</h3><p class="muted">无问题。</p></div>
+
+  <h2>事实清单（带源码证据）</h2>
+  <table>
+    <thead><tr><th>ID</th><th>类型</th><th>陈述</th><th>证据</th><th>置信度</th></tr></thead>
+    <tbody><tr><td><b>F1</b></td><td>entrypoint</td><td>通过 `python -m todo_cli` 启动，`__main__.py` 调用 `cli.main()` 并把返回值作为退出码。</td><td><code>todo_cli/__main__.py:[1, 6]</code></td><td>high</td></tr><tr><td><b>F2</b></td><td>command</td><td>通过 argparse 子解析器提供 add、list、done、delete 四个子命令。</td><td><code>todo_cli/cli.py:[29, 38]</code></td><td>high</td></tr><tr><td><b>F3</b></td><td>command</td><td>`add &lt;title&gt;` 使用当前最大任务 ID 加 1 创建新任务，并立即写入数据文件。</td><td><code>todo_cli/cli.py:[60, 66]</code></td><td>high</td></tr><tr><td><b>F4</b></td><td>command</td><td>`list` 按保存顺序输出任务，未完成任务标记为 `[ ]`，已完成标记为 `[x]`。</td><td><code>todo_cli/cli.py:[68, 75]</code></td><td>high</td></tr><tr><td><b>F5</b></td><td>command</td><td>`done &lt;task_id&gt;` 将指定任务标记为已完成；ID 不存在时打印提示并返回退出码 1。</td><td><code>todo_cli/cli.py:[43, 49]</code><br><code>todo_cli/cli.py:[77, 86]</code></td><td>high</td></tr><tr><td><b>F6</b></td><td>command</td><td>`delete &lt;task_id&gt;` 删除指定任务；ID 不存在时打印提示并返回退出码 1。</td><td><code>todo_cli/cli.py:[77, 80]</code><br><code>todo_cli/cli.py:[88, 92]</code></td><td>high</td></tr><tr><td><b>F7</b></td><td>configuration</td><td>全局选项 `--data` 指定 JSON 数据文件，默认值为 `todo.json`。</td><td><code>todo_cli/cli.py:[11, 11]</code><br><code>todo_cli/cli.py:[21, 25]</code></td><td>high</td></tr><tr><td><b>F8</b></td><td>dependency</td><td>运行时只使用 Python 标准库，依赖列表为空；要求 Python 3.11 或更新版本。</td><td><code>pyproject.toml:[9, 10]</code></td><td>high</td></tr><tr><td><b>F9</b></td><td>data</td><td>任务保存在单个 JSON 文件中，加载时读取整个文件，保存时重写整个文件。</td><td><code>todo_cli/storage.py:[17, 36]</code></td><td>high</td></tr><tr><td><b>F10</b></td><td>module</td><td>`cli.py` 负责参数解析、命令分发和输出，`storage.py` 负责 JSON 读写，`models.py` 定义 Task 数据类。</td><td><code>todo_cli/cli.py:[14, 40]</code><br><code>todo_cli/storage.py:[11, 36]</code><br><code>todo_cli/models.py:[9, 30]</code></td><td>high</td></tr><tr><td><b>F11</b></td><td>limitation</td><td>存储层没有加锁或合并逻辑，多个进程同时写入时可能互相覆盖。</td><td><code>todo_cli/storage.py:[26, 36]</code></td><td>medium</td></tr><tr><td><b>F12</b></td><td>feature</td><td>Task 数据类包含整数 id、字符串 title 和布尔 done，done 默认为 False。</td><td><code>todo_cli/models.py:[9, 15]</code></td><td>high</td></tr><tr><td><b>F13</b></td><td>data</td><td>任务以 JSON 数组形式保存，每个元素包含 id、title、done 字段。</td><td><code>todo_cli/storage.py:[22, 36]</code></td><td>high</td></tr><tr><td><b>F14</b></td><td>limitation</td><td>当前只注册了 add、list、done、delete 四个命令，没有编辑或排序命令。</td><td><code>todo_cli/cli.py:[29, 38]</code></td><td>high</td></tr></tbody>
+  </table>
+
+  <h2>工具调用</h2>
+  <table>
+    <thead><tr><th>Agent</th><th>工具</th><th>参数</th><th>结果字符</th><th>耗时</th><th>错误</th></tr></thead>
+    <tbody><tr><td>analyst</td><td>list_files</td><td><code>{}</code></td><td>392</td><td> ms</td><td>False</td></tr><tr><td>analyst</td><td>read_file</td><td><code>{&quot;path&quot;: &quot;todo_cli/cli.py&quot;, &quot;start&quot;: 1, &quot;end&quot;: 95}</code></td><td>6629</td><td> ms</td><td>False</td></tr><tr><td>analyst</td><td>read_file</td><td><code>{&quot;path&quot;: &quot;todo_cli/storage.py&quot;}</code></td><td>2578</td><td> ms</td><td>False</td></tr><tr><td>analyst</td><td>read_file</td><td><code>{&quot;path&quot;: &quot;todo_cli/models.py&quot;}</code></td><td>1749</td><td> ms</td><td>False</td></tr><tr><td>reviewer</td><td>read_file</td><td><code>{&quot;path&quot;: &quot;todo_cli/cli.py&quot;, &quot;start&quot;: 1, &quot;end&quot;: 95}</code></td><td>6629</td><td> ms</td><td>False</td></tr><tr><td>reviewer</td><td>read_file</td><td><code>{&quot;path&quot;: &quot;pyproject.toml&quot;}</code></td><td>889</td><td> ms</td><td>False</td></tr></tbody>
+  </table>
+
+  <h2>模型调用</h2>
+  <table>
+    <thead><tr><th>Agent</th><th>轮次</th><th>耗时</th><th>字符</th><th>token</th></tr></thead>
+    <tbody><tr><td>analyst</td><td>turn 1</td><td>0 ms</td><td>68</td><td>0</td></tr><tr><td>analyst</td><td>turn 2</td><td>0 ms</td><td>115</td><td>0</td></tr><tr><td>analyst</td><td>turn 3</td><td>0 ms</td><td>98</td><td>0</td></tr><tr><td>analyst</td><td>turn 4</td><td>0 ms</td><td>90</td><td>0</td></tr><tr><td>analyst</td><td>turn 5</td><td>0 ms</td><td>2942</td><td>0</td></tr><tr><td>writer</td><td>attempt 1</td><td>0 ms</td><td>958</td><td>0</td></tr><tr><td>reviewer</td><td>turn 1</td><td>0 ms</td><td>116</td><td>0</td></tr><tr><td>reviewer</td><td>turn 2</td><td>0 ms</td><td>355</td><td>0</td></tr><tr><td>writer</td><td>attempt 1</td><td>0 ms</td><td>1076</td><td>0</td></tr><tr><td>reviewer</td><td>turn 1</td><td>0 ms</td><td>86</td><td>0</td></tr><tr><td>reviewer</td><td>turn 2</td><td>0 ms</td><td>315</td><td>0</td></tr></tbody>
+  </table>
+
+  <h2>原始产物</h2>
+  <p class="links"><a href="README.rejected.md">README.rejected.md</a><a href="analysis.json">analysis.json</a><a href="review.json">review.json</a><a href="state.json">state.json</a><a href="trace.jsonl">trace.jsonl</a><a href="manifest.json">manifest.json</a><a href="drafts/draft-v1.md">draft-v1.md</a><a href="drafts/draft-v2.md">draft-v2.md</a></p>
+  <p class="note">这是从运行产物生成的静态查看页，不是工作流的一部分；工作流本身没有网页界面。
+  通过状态以 <code>README.generated.md</code> 为准，失败状态以 <code>README.rejected.md</code> 和 <code>review.json</code> 为准。</p>
+</div>
+</body>
+</html>

@@ -84,6 +84,8 @@ return "finalize_fail"
 
 每次运行保存 `state.json`，因此可以直接查看“第一个 Agent 的事实是否真的传到了后续 Agent”。
 
+另外提供 `scripts/make_report.py`，从一次运行的 JSON/JSONL 生成静态 HTML 查看页（执行路径、审核问题、事实证据、工具调用）。它只是查看器，不参与工作流执行；工作流本身没有网页界面。
+
 ## 5. Agent 设计
 
 三个 Agent 使用独立提示词、输入契约和输出校验。
