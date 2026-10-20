@@ -1,0 +1,38 @@
+[
+  {
+    "path": "pyproject.toml",
+    "size_bytes": 307,
+    "lines": 14,
+    "sha256": "2974f0d263a99ecfcd175e76f6aec7f0a7ec3f1985111a35b0fee29bdf3ba59b"
+  },
+  {
+    "path": "todo_cli/__init__.py",
+    "size_bytes": 72,
+    "lines": 3,
+    "sha256": "117f5f17d83c6c1418798c3c315d55e87c177aeaa141509af27ec2d5ea544ffc"
+  },
+  {
+    "path": "todo_cli/__main__.py",
+    "size_bytes": 133,
+    "lines": 6,
+    "sha256": "4527ae182a4a47b3de80ba1c6d1d2cb50ae64837d9988011bfb8e13f6d8d2ecc"
+  },
+  {
+    "path": "todo_cli/cli.py",
+    "size_bytes": 2738,
+    "lines": 95,
+    "sha256": "0be5c3a43009335db229a51c4bc6119a4e38c37578f36e98800fb533c29ba7af"
+  },
+  {
+    "path": "todo_cli/models.py",
+    "size_bytes": 647,
+    "lines": 30,
+    "sha256": "1b43c6fd54d040ea93e1446eed91c40f862f76ef84feebaa5e1741d4b35da77f"
+  },
+  {
+    "path": "todo_cli/storage.py",
+    "size_bytes": 1034,
+    "lines": 36,
+    "sha256": "4129f82ae13a1eca25fc06e09844047fa8d2bf2c060900ab8ba8f1c7693a95e5"
+  }
+]

@@ -1,0 +1,53 @@
+{
+  "verdict": "revise",
+  "issues": [
+    {
+      "severity": "high",
+      "claim": "安装章节的 pip install todo-cli 命令",
+      "problem": "事实清单和 pyproject.toml 都没有提供 pip 安装命令或发布包信息；该命令没有源码证据。",
+      "evidence": "pyproject.toml 只声明项目元数据，未提供 scripts 或发布配置",
+      "suggestion": "删除该安装命令，或先在事实清单中补充可核验的安装方式。"
+    }
+  ],
+  "rule_issues": [],
+  "rounds": [
+    {
+      "stage": "review",
+      "draft_version": 1,
+      "verdict": "revise",
+      "issues": [
+        {
+          "severity": "medium",
+          "claim": "安装章节缺少 Python 版本要求",
+          "problem": "pyproject.toml 声明 requires-python >= 3.11，但草稿的安装章节只说明无需第三方依赖，没有告诉用户最低 Python 版本。",
+          "evidence": "pyproject.toml:9 声明 requires-python = \">=3.11\"",
+          "suggestion": "在安装章节补充“需要 Python 3.11 或更新版本”，并引用事实 F8。"
+        }
+      ]
+    },
+    {
+      "stage": "rules",
+      "draft_version": 1,
+      "issues": []
+    },
+    {
+      "stage": "review",
+      "draft_version": 2,
+      "verdict": "revise",
+      "issues": [
+        {
+          "severity": "high",
+          "claim": "安装章节的 pip install todo-cli 命令",
+          "problem": "事实清单和 pyproject.toml 都没有提供 pip 安装命令或发布包信息；该命令没有源码证据。",
+          "evidence": "pyproject.toml 只声明项目元数据，未提供 scripts 或发布配置",
+          "suggestion": "删除该安装命令，或先在事实清单中补充可核验的安装方式。"
+        }
+      ]
+    },
+    {
+      "stage": "rules",
+      "draft_version": 2,
+      "issues": []
+    }
+  ]
+}

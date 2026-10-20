@@ -1,0 +1,18 @@
+{
+  "verdict": "pass",
+  "issues": [],
+  "rule_issues": [],
+  "rounds": [
+    {
+      "stage": "review",
+      "draft_version": 1,
+      "verdict": "pass",
+      "issues": []
+    },
+    {
+      "stage": "rules",
+      "draft_version": 1,
+      "issues": []
+    }
+  ]
+}

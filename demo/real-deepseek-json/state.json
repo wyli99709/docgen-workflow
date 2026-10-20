@@ -1,0 +1,887 @@
+{
+  "run_id": "20261020-090355",
+  "input_dir": "examples/todo_cli",
+  "output_dir": "demo/real-deepseek-json",
+  "model": "deepseek-flash",
+  "status": "passed",
+  "source_digest": "fd18bc3121a8d245b9b6803e677087866bd185c31736e68475899d3534050b29",
+  "manifest": [
+    {
+      "path": "pyproject.toml",
+      "size_bytes": 307,
+      "lines": 14,
+      "sha256": "2974f0d263a99ecfcd175e76f6aec7f0a7ec3f1985111a35b0fee29bdf3ba59b"
+    },
+    {
+      "path": "todo_cli/__init__.py",
+      "size_bytes": 72,
+      "lines": 3,
+      "sha256": "117f5f17d83c6c1418798c3c315d55e87c177aeaa141509af27ec2d5ea544ffc"
+    },
+    {
+      "path": "todo_cli/__main__.py",
+      "size_bytes": 133,
+      "lines": 6,
+      "sha256": "4527ae182a4a47b3de80ba1c6d1d2cb50ae64837d9988011bfb8e13f6d8d2ecc"
+    },
+    {
+      "path": "todo_cli/cli.py",
+      "size_bytes": 2738,
+      "lines": 95,
+      "sha256": "0be5c3a43009335db229a51c4bc6119a4e38c37578f36e98800fb533c29ba7af"
+    },
+    {
+      "path": "todo_cli/models.py",
+      "size_bytes": 647,
+      "lines": 30,
+      "sha256": "1b43c6fd54d040ea93e1446eed91c40f862f76ef84feebaa5e1741d4b35da77f"
+    },
+    {
+      "path": "todo_cli/storage.py",
+      "size_bytes": 1034,
+      "lines": 36,
+      "sha256": "4129f82ae13a1eca25fc06e09844047fa8d2bf2c060900ab8ba8f1c7693a95e5"
+    }
+  ],
+  "ast_index": {
+    "python_files": {
+      "todo_cli/__init__.py": {
+        "docstring": "A minimal local command-line todo manager.",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "from_imports": [],
+        "main_guard": false,
+        "argparse": {
+          "parsers": [],
+          "subcommands": [],
+          "options": []
+        }
+      },
+      "todo_cli/__main__.py": {
+        "docstring": "Module entry point for ``python -m todo_cli``.",
+        "functions": [],
+        "classes": [],
+        "imports": [],
+        "from_imports": [
+          {
+            "module": "cli",
+            "names": [
+              "main"
+            ],
+            "level": 1
+          }
+        ],
+        "main_guard": true,
+        "argparse": {
+          "parsers": [],
+          "subcommands": [],
+          "options": []
+        }
+      },
+      "todo_cli/cli.py": {
+        "docstring": "Command-line interface for the todo manager.",
+        "functions": [
+          {
+            "name": "build_parser",
+            "lineno": 14,
+            "end_lineno": 40,
+            "args": [],
+            "docstring": "Create the argument parser and all subcommands."
+          },
+          {
+            "name": "_find_task",
+            "lineno": 43,
+            "end_lineno": 49,
+            "args": [
+              "tasks",
+              "task_id"
+            ],
+            "docstring": "Return the task with ``task_id``, or ``None`` when absent."
+          },
+          {
+            "name": "main",
+            "lineno": 52,
+            "end_lineno": 95,
+            "args": [
+              "argv"
+            ],
+            "docstring": "Run one command and return a process exit code."
+          }
+        ],
+        "classes": [],
+        "imports": [
+          {
+            "module": "argparse",
+            "asname": null
+          }
+        ],
+        "from_imports": [
+          {
+            "module": "__future__",
+            "names": [
+              "annotations"
+            ],
+            "level": 0
+          },
+          {
+            "module": "pathlib",
+            "names": [
+              "Path"
+            ],
+            "level": 0
+          },
+          {
+            "module": "models",
+            "names": [
+              "Task"
+            ],
+            "level": 1
+          },
+          {
+            "module": "storage",
+            "names": [
+              "TaskStore"
+            ],
+            "level": 1
+          }
+        ],
+        "main_guard": false,
+        "argparse": {
+          "parsers": [
+            {
+              "lineno": 17,
+              "prog": "todo",
+              "description": "A minimal local command-line todo manager."
+            }
+          ],
+          "subcommands": [
+            {
+              "name": "add",
+              "lineno": 29,
+              "help": "Add a new task."
+            },
+            {
+              "name": "list",
+              "lineno": 32,
+              "help": "List all tasks."
+            },
+            {
+              "name": "done",
+              "lineno": 34,
+              "help": "Mark a task as completed."
+            },
+            {
+              "name": "delete",
+              "lineno": 37,
+              "help": "Delete a task."
+            }
+          ],
+          "options": [
+            {
+              "option": "--data",
+              "lineno": 21,
+              "dest": null,
+              "help": "Path to the JSON data file (default: todo.json).",
+              "default": null,
+              "type": null,
+              "action": null
+            },
+            {
+              "option": "title",
+              "lineno": 30,
+              "dest": null,
+              "help": "Title of the new task.",
+              "default": null,
+              "type": null,
+              "action": null
+            },
+            {
+              "option": "task_id",
+              "lineno": 35,
+              "dest": null,
+              "help": "ID of the task to complete.",
+              "default": null,
+              "type": "int",
+              "action": null
+            },
+            {
+              "option": "task_id",
+              "lineno": 38,
+              "dest": null,
+              "help": "ID of the task to delete.",
+              "default": null,
+              "type": "int",
+              "action": null
+            }
+          ]
+        }
+      },
+      "todo_cli/models.py": {
+        "docstring": "Data model for todo tasks.",
+        "functions": [],
+        "classes": [
+          {
+            "name": "Task",
+            "lineno": 10,
+            "end_lineno": 30,
+            "docstring": "A single todo item.",
+            "methods": [
+              {
+                "name": "to_dict",
+                "lineno": 17,
+                "end_lineno": 20,
+                "args": [
+                  "self"
+                ],
+                "docstring": "Return a JSON-serialisable representation."
+              },
+              {
+                "name": "from_dict",
+                "lineno": 23,
+                "end_lineno": 30,
+                "args": [
+                  "cls",
+                  "data"
+                ],
+                "docstring": "Build a task from a decoded JSON object."
+              }
+            ]
+          }
+        ],
+        "imports": [],
+        "from_imports": [
+          {
+            "module": "__future__",
+            "names": [
+              "annotations"
+            ],
+            "level": 0
+          },
+          {
+            "module": "dataclasses",
+            "names": [
+              "asdict",
+              "dataclass"
+            ],
+            "level": 0
+          },
+          {
+            "module": "typing",
+            "names": [
+              "Any"
+            ],
+            "level": 0
+          }
+        ],
+        "main_guard": false,
+        "argparse": {
+          "parsers": [],
+          "subcommands": [],
+          "options": []
+        }
+      },
+      "todo_cli/storage.py": {
+        "docstring": "JSON-file persistence for tasks.",
+        "functions": [],
+        "classes": [
+          {
+            "name": "TaskStore",
+            "lineno": 11,
+            "end_lineno": 36,
+            "docstring": "Load and save tasks in a single JSON file.",
+            "methods": [
+              {
+                "name": "__init__",
+                "lineno": 14,
+                "end_lineno": 15,
+                "args": [
+                  "self",
+                  "path"
+                ],
+                "docstring": null
+              },
+              {
+                "name": "load",
+                "lineno": 17,
+                "end_lineno": 24,
+                "args": [
+                  "self"
+                ],
+                "docstring": "Read tasks from disk; a missing file means an empty list."
+              },
+              {
+                "name": "save",
+                "lineno": 26,
+                "end_lineno": 36,
+                "args": [
+                  "self",
+                  "tasks"
+                ],
+                "docstring": "Write all tasks to disk, creating parent directories if needed."
+              }
+            ]
+          }
+        ],
+        "imports": [
+          {
+            "module": "json",
+            "asname": null
+          }
+        ],
+        "from_imports": [
+          {
+            "module": "__future__",
+            "names": [
+              "annotations"
+            ],
+            "level": 0
+          },
+          {
+            "module": "pathlib",
+            "names": [
+              "Path"
+            ],
+            "level": 0
+          },
+          {
+            "module": "models",
+            "names": [
+              "Task"
+            ],
+            "level": 1
+          }
+        ],
+        "main_guard": false,
+        "argparse": {
+          "parsers": [],
+          "subcommands": [],
+          "options": []
+        }
+      }
+    },
+    "pyproject": {
+      "path": "pyproject.toml",
+      "project": {
+        "name": "todo-cli",
+        "version": "0.1.0",
+        "description": "A minimal local command-line todo manager.",
+        "requires-python": ">=3.11",
+        "dependencies": []
+      },
+      "build_system": {
+        "requires": [
+          "setuptools>=61"
+        ],
+        "build-backend": "setuptools.build_meta"
+      }
+    },
+    "requirements": null
+  },
+  "facts": [
+    {
+      "id": "F1",
+      "kind": "entrypoint",
+      "statement": "__main__.py 从 .cli 导入 main，在 if __name__ == \"__main__\" 中执行 raise SystemExit(main())，可用 python -m todo_cli 启动。",
+      "evidence": [
+        {
+          "file": "todo_cli/__main__.py",
+          "lines": [
+            1,
+            6
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F2",
+      "kind": "entrypoint",
+      "statement": "cli.main(argv) 依次 build_parser、parse_args、构造 TaskStore(Path(args.data)) 并 load 任务，按 args.command 分派后返回进程退出码。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            52,
+            58
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F3",
+      "kind": "command",
+      "statement": "build_parser 创建 prog 为 todo、description 为 “A minimal local command-line todo manager.” 的 argparse 解析器，subparsers 的 dest 为 command 且 required=True，注册 add/list/done/delete 四个子命令。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            14,
+            40
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F4",
+      "kind": "configuration",
+      "statement": "全局选项 --data 默认值为常量 DEFAULT_DATA_FILE，即 \"todo.json\"，用于指定 JSON 数据文件路径。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            21,
+            25
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F5",
+      "kind": "command",
+      "statement": "add 子命令接受位置参数 title，新任务 ID 取现有最大 ID + 1（空列表时为 1），保存后打印 “Added task {id}: {title}” 并返回 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            29,
+            30
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            60,
+            66
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F6",
+      "kind": "command",
+      "statement": "list 子命令在无任务时打印 “No tasks yet.”；否则逐条打印 “[x] id. title”（done 为真）或 “[ ] id. title”，两种情况均返回 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            32,
+            32
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            68,
+            75
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F7",
+      "kind": "command",
+      "statement": "done 子命令接受 int 类型位置参数 task_id，将 done 置为 True、保存并打印 “Completed task {id}: {title}”，返回 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            34,
+            35
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            82,
+            86
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F8",
+      "kind": "command",
+      "statement": "delete 子命令接受 int 类型位置参数 task_id，从列表移除任务、保存并打印 “Deleted task {id}: {title}”，返回 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            37,
+            38
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            88,
+            92
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F9",
+      "kind": "feature",
+      "statement": "done/delete 在执行前用 _find_task 按 id 查找任务；找不到时打印 “Task {task_id} not found.” 并返回退出码 1。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            43,
+            49
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            77,
+            80
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F10",
+      "kind": "limitation",
+      "statement": "main 末尾对未匹配命令调用 parser.error(\"Unsupported command: ...\")，之后返回 2。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            94,
+            95
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F11",
+      "kind": "module",
+      "statement": "models.py 定义 @dataclass Task，字段为 id: int、title: str、done: bool = False。",
+      "evidence": [
+        {
+          "file": "todo_cli/models.py",
+          "lines": [
+            9,
+            15
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F12",
+      "kind": "data",
+      "statement": "Task.to_dict 返回 asdict(self)；Task.from_dict 从 JSON 对象读取 id、title，并用 data.get(\"done\", False) 填充 done。",
+      "evidence": [
+        {
+          "file": "todo_cli/models.py",
+          "lines": [
+            17,
+            30
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F13",
+      "kind": "data",
+      "statement": "TaskStore.load 在数据文件不存在时返回空列表，否则以 UTF-8 打开 JSON 文件，期望顶层为数组并逐项调用 Task.from_dict。",
+      "evidence": [
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            17,
+            24
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F14",
+      "kind": "data",
+      "statement": "TaskStore.save 先 mkdir(parents=True, exist_ok=True) 创建父目录，再以 UTF-8 写 JSON，json.dump 使用 ensure_ascii=False 和 indent=2。",
+      "evidence": [
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            26,
+            36
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F15",
+      "kind": "dependency",
+      "statement": "pyproject.toml 声明 requires-python 为 \">=3.11\"、dependencies 为空列表，build-system requires 为 setuptools>=61，build-backend 为 setuptools.build_meta。",
+      "evidence": [
+        {
+          "file": "pyproject.toml",
+          "lines": [
+            1,
+            10
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F16",
+      "kind": "metadata",
+      "statement": "项目元数据为 name=\"todo-cli\"、version=\"0.1.0\"、description=\"A minimal local command-line todo manager.\"，setuptools 包发现 include 为 [\"todo_cli*\"]。",
+      "evidence": [
+        {
+          "file": "pyproject.toml",
+          "lines": [
+            5,
+            14
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F17",
+      "kind": "metadata",
+      "statement": "包 todo_cli 在 __init__.py 中声明 __version__ = \"0.1.0\"，与 pyproject 版本一致。",
+      "evidence": [
+        {
+          "file": "todo_cli/__init__.py",
+          "lines": [
+            1,
+            3
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F18",
+      "kind": "limitation",
+      "statement": "pyproject.toml 未声明 [project.scripts]，因此安装后不提供 console_scripts 命令，只能通过 python -m todo_cli 启动。",
+      "evidence": [
+        {
+          "file": "pyproject.toml",
+          "lines": [
+            1,
+            14
+          ]
+        }
+      ],
+      "confidence": "high"
+    }
+  ],
+  "unknowns": [
+    "未确认是否支持并发写入同一数据文件（save 为整文件覆盖写，未见锁机制）",
+    "未确认 add 是否校验空标题或重复标题",
+    "未确认数据文件 JSON 损坏或顶层非数组时的错误处理行为",
+    "未确认是否有测试目录或 CI 配置"
+  ],
+  "draft": "# todo-cli\n\n## 项目用途\n\ntodo-cli 是一个极简的本地命令行待办事项管理器，项目元数据中的描述即为 “A minimal local command-line todo manager.” [F16]。它把任务保存在一个本地 JSON 文件中，默认文件名为 `todo.json` [F4]，并提供添加、列出、完成、删除四类操作 [F3]。\n\n任务模型是 `Task` 数据类，包含 `id: int`、`title: str`、`done: bool = False` 三个字段 [F11]，在 JSON 中同样以这三个键存取 [F12]。\n\n## 安装\n\n**无需安装直接运行**：项目没有第三方运行时依赖，`pyproject.toml` 的 `dependencies` 为空列表 [F15]，只要求 Python `>=3.11` [F15]。在项目根目录下直接以模块方式启动即可 [F1]：\n\n```bash\npython -m todo_cli --help\n```\n\n**需要安装的情况**：仓库提供了 `pyproject.toml`，构建后端为 `setuptools.build_meta`，构建依赖为 `setuptools>=61`，包名 `todo-cli`、版本 `0.1.0`，包发现范围包含 `todo_cli*` [F15][F16]。但 `pyproject.toml` 未声明 `[project.scripts]`，因此安装后不会生成 `todo` 之类的命令行入口，仍然只能用 `python -m todo_cli` 启动 [F18]。具体安装命令待确认（事实清单未给出安装步骤），如需安装请确认要使用的构建/安装方式。\n\n## 使用方法\n\n所有命令在项目根目录（即包含 `todo_cli/` 的目录）执行，这样 `python -m todo_cli` 才能找到包 [F1]。数据文件默认为当前目录下的 `todo.json`，可通过全局选项 `--data` 指定其他路径 [F4]。\n\n添加任务（位置参数 `title`，新 ID 为现有最大 ID + 1，空列表时为 1，成功后打印 `Added task {id}: {title}` 并返回 0）[F5]：\n\n```bash\npython -m todo_cli add \"Buy milk\"\n```\n\n列出任务（无任务时打印 `No tasks yet.`；否则逐条打印 `[x] id. title` 或 `[ ] id. title`，返回 0）[F6]：\n\n```bash\npython -m todo_cli list\n```\n\n标记完成（位置参数为整型 `task_id`，打印 `Completed task {id}: {title}`，返回 0）[F7]：\n\n```bash\npython -m todo_cli done 1\n```\n\n删除任务（位置参数为整型 `task_id`，打印 `Deleted task {id}: {title}`，返回 0）[F8]：\n\n```bash\npython -m todo_cli delete 2\n```\n\n指定自定义数据文件（`--data` 是顶层解析器上的全局选项，需写在子命令之前）[F4]：\n\n```bash\npython -m todo_cli --data tasks.json list\n```\n\n`done` 与 `delete` 会先按 ID 查找任务，找不到时打印 `Task {task_id} not found.` 并返回退出码 1 [F9]。子命令由 argparse 的必填 subparsers 提供，未提供子命令时由 argparse 报错 [F3]。\n\n## 主要模块\n\n- `pyproject.toml`：项目元数据与构建配置；声明 Python `>=3.11`、空依赖列表、setuptools 构建后端、包发现范围 `[\"todo_cli*\"]`，未声明命令行入口 [F15][F16][F18]。\n- `todo_cli/__init__.py`：包初始化，声明 `__version__ = \"0.1.0\"`，与 pyproject 版本一致 [F17]。\n- `todo_cli/__main__.py`：模块入口，从 `.cli` 导入 `main`，在 `if __name__ == \"__main__\"` 中执行 `raise SystemExit(main())` [F1]。\n- `todo_cli/cli.py`：命令行主体，包含 `build_parser`（prog 为 `todo`、注册 add/list/done/delete 四个子命令、`--data` 选项）[F3][F4]、`main`（解析参数、构造 `TaskStore(Path(args.data))` 并加载、按 `args.command` 分派、返回退出码）[F2]，以及 `_find_task` 查找逻辑 [F9]。\n- `todo_cli/models.py`：定义 `Task` 数据类 [F11]，提供 `to_dict`（`asdict`）与 `from_dict`（读取 `id`、`title`，`done` 用 `data.get(\"done\", False)` 兜底）[F12]。\n- `todo_cli/storage.py`：`TaskStore` 负责读写；`load` 在文件不存在时返回空列表，否则以 UTF-8 读取顶层为数组的 JSON 并逐项转成 `Task` [F13]；`save` 先递归创建父目录，再以 UTF-8 写入 JSON，`ensure_ascii=False`、`indent=2` [F14]。\n\n## 已知限制\n\n- 安装后没有 `todo` 等命令行入口，只能通过 `python -m todo_cli` 启动 [F18]。\n- 数据以单个 JSON 文件整文件写入的方式保存 [F14]，并发写入同一文件的行为待确认（事实清单未确认是否存在锁机制），需要确认多人/多进程同时使用是否安全。\n- `add` 是否校验空标题或重复标题待确认，需要确认空字符串是否会被接受。\n- 数据文件 JSON 损坏或顶层不是数组时的错误处理行为待确认，需要确认此时是否会抛出未捕获异常 [F13]。\n- 未匹配到任何子命令时会调用 `parser.error(\"Unsupported command: ...\")` 并返回 2 [F10]，但正常使用中 argparse 的必填子命令 [F3] 已限制该分支的触发条件，其实际触发场景待确认。\n- 新任务 ID 取现有最大 ID + 1 [F5]，因此删除最大 ID 的任务后新增任务可能复用该 ID，任务标识不保证长期唯一（据 F5 推导）。\n- 是否有测试目录或 CI 配置待确认，当前文件清单中未见相关文件。",
+  "draft_version": 1,
+  "review_verdict": "pass",
+  "review_issues": [],
+  "rule_issues": [],
+  "revision_feedback": [],
+  "revision_count": 0,
+  "max_revisions": 1,
+  "rounds": [
+    {
+      "stage": "review",
+      "draft_version": 1,
+      "verdict": "pass",
+      "issues": []
+    },
+    {
+      "stage": "rules",
+      "draft_version": 1,
+      "issues": []
+    }
+  ],
+  "events": [
+    {
+      "ts": "2026-10-20T01:03:55+00:00",
+      "event": "run_start",
+      "node": null,
+      "summary": "model=deepseek-flash"
+    },
+    {
+      "ts": "2026-10-20T01:03:55+00:00",
+      "event": "node_start",
+      "node": "scan",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:03:55+00:00",
+      "event": "scan",
+      "node": "scan",
+      "summary": "6 个文件",
+      "digest": "fd18bc3121a8"
+    },
+    {
+      "ts": "2026-10-20T01:03:55+00:00",
+      "event": "node_end",
+      "node": "scan",
+      "summary": "",
+      "duration_ms": 0
+    },
+    {
+      "ts": "2026-10-20T01:03:55+00:00",
+      "event": "node_start",
+      "node": "analyze",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:04:48+00:00",
+      "event": "analyze",
+      "node": "analyze",
+      "summary": "18 条事实",
+      "facts": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17",
+        "F18"
+      ]
+    },
+    {
+      "ts": "2026-10-20T01:04:48+00:00",
+      "event": "node_end",
+      "node": "analyze",
+      "summary": "",
+      "duration_ms": 52891
+    },
+    {
+      "ts": "2026-10-20T01:04:48+00:00",
+      "event": "node_start",
+      "node": "write",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:05:00+00:00",
+      "event": "write",
+      "node": "write",
+      "summary": "第 1 版草稿",
+      "chars": 2931,
+      "feedback_items": 0
+    },
+    {
+      "ts": "2026-10-20T01:05:00+00:00",
+      "event": "node_end",
+      "node": "write",
+      "summary": "",
+      "duration_ms": 11406
+    },
+    {
+      "ts": "2026-10-20T01:05:00+00:00",
+      "event": "node_start",
+      "node": "review",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "review",
+      "node": "review",
+      "summary": "pass，0 条问题",
+      "draft_version": 1
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "node_end",
+      "node": "review",
+      "summary": "",
+      "duration_ms": 53046
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "node_start",
+      "node": "rules",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "rules",
+      "node": "rules",
+      "summary": "0 条机械校验问题",
+      "draft_version": 1
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "node_end",
+      "node": "rules",
+      "summary": "",
+      "duration_ms": 0
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "route",
+      "node": "rules",
+      "summary": "",
+      "target": "finalize_pass"
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "node_start",
+      "node": "finalize_pass",
+      "summary": ""
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "finalize",
+      "node": "finalize_pass",
+      "summary": "通过"
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "node_end",
+      "node": "finalize_pass",
+      "summary": "",
+      "duration_ms": 0
+    },
+    {
+      "ts": "2026-10-20T01:05:53+00:00",
+      "event": "run_end",
+      "node": null,
+      "summary": "passed",
+      "facts": 18,
+      "revisions": 0
+    }
+  ],
+  "errors": [],
+  "started_at": "2026-10-20T01:03:55+00:00",
+  "finished_at": "2026-10-20T01:05:53+00:00"
+}

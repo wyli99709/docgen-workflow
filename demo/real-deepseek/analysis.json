@@ -1,0 +1,306 @@
+{
+  "source_digest": "fd18bc3121a8d245b9b6803e677087866bd185c31736e68475899d3534050b29",
+  "facts": [
+    {
+      "id": "F1",
+      "kind": "entrypoint",
+      "statement": "程序通过 `python -m todo_cli` 启动：`todo_cli/__main__.py` 从 `.cli` 导入 `main`，并在 `__main__` 保护下执行 `raise SystemExit(main())`，用 main 的返回值作为进程退出码。",
+      "evidence": [
+        {
+          "file": "todo_cli/__main__.py",
+          "lines": [
+            1,
+            6
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F2",
+      "kind": "entrypoint",
+      "statement": "`pyproject.toml` 只定义 build-system 与 project 元数据（name=todo-cli、version=0.1.0），没有 `[project.scripts]` 控制台脚本入口，因此安装后不提供 `todo` 命令，需用 `python -m todo_cli` 运行。",
+      "evidence": [
+        {
+          "file": "pyproject.toml",
+          "lines": [
+            1,
+            14
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F3",
+      "kind": "dependency",
+      "statement": "项目要求 Python >=3.11（`requires-python = \">=3.11\"`），运行时 `dependencies = []` 为空，仅使用标准库；构建依赖为 `setuptools>=61`，后端 `setuptools.build_meta`，并使用 `[tool.setuptools.packages.find]` 的 `include = [\"todo_cli*\"]` 发现包。",
+      "evidence": [
+        {
+          "file": "pyproject.toml",
+          "lines": [
+            1,
+            14
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F4",
+      "kind": "command",
+      "statement": "CLI 由 `build_parser()` 用 `argparse.ArgumentParser(prog=\"todo\", description=\"A minimal local command-line todo manager.\")` 构建；全局选项 `--data` 指定 JSON 数据文件路径，默认值来自 `DEFAULT_DATA_FILE = \"todo.json\"`；子命令通过 `add_subparsers(dest=\"command\", required=True)` 注册，必须显式指定一个子命令。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            11,
+            27
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F5",
+      "kind": "command",
+      "statement": "`add` 子命令接收一个位置参数 `title`（新任务标题）；实现中取现有任务最大 id 加 1 作为新 id，创建 `Task(id=next_id, title=args.title)`（done 默认 False），追加并保存，输出 `Added task {id}: {title}`，返回退出码 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            29,
+            30
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            60,
+            66
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F6",
+      "kind": "command",
+      "statement": "`list` 子命令无参数；任务为空时输出 `No tasks yet.` 并返回 0，否则逐条输出 `[{x| }] {id}. {title}`（已完成标记为 `x`，未完成为空格），返回 0。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            32,
+            32
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            68,
+            75
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F7",
+      "kind": "command",
+      "statement": "`done` 子命令接收整数位置参数 `task_id`（type=int），把对应任务 `done` 置为 True 并保存，输出 `Completed task {id}: {title}`，返回 0；若任务不存在则输出 `Task {task_id} not found.` 并返回退出码 1。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            34,
+            35
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            77,
+            86
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F8",
+      "kind": "command",
+      "statement": "`delete` 子命令接收整数位置参数 `task_id`（type=int），从列表中移除对应任务并保存，输出 `Deleted task {id}: {title}`，返回 0；任务不存在时同样输出 `Task {task_id} not found.` 并返回退出码 1。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            37,
+            38
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            77,
+            80
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            88,
+            92
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F9",
+      "kind": "configuration",
+      "statement": "`main(argv)` 按 `args.data` 构造 `TaskStore(Path(args.data))` 并先调用 `store.load()` 载入任务，再按 `args.command` 分派；未匹配任何命令时调用 `parser.error(f\"Unsupported command: {args.command}\")` 并返回 2。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            52,
+            58
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            94,
+            95
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F10",
+      "kind": "data",
+      "statement": "任务以 JSON 数组形式保存在单个文件中（默认 `todo.json`，可用 `--data` 覆盖）：`TaskStore.save` 先 `mkdir(parents=True, exist_ok=True)` 创建父目录，再以 UTF-8 写入 `json.dump([task.to_dict() ...], ensure_ascii=False, indent=2)`。",
+      "evidence": [
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            26,
+            36
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            11,
+            11
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            21,
+            25
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F11",
+      "kind": "data",
+      "statement": "`TaskStore.load` 在数据文件不存在时直接返回空列表；文件存在时以 UTF-8 读取并用 `Task.from_dict` 逐项转换为 Task 列表。",
+      "evidence": [
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            17,
+            24
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F12",
+      "kind": "module",
+      "statement": "`todo_cli/models.py` 以 `@dataclass` 定义 `Task`，字段为 `id: int`、`title: str`、`done: bool = False`；`to_dict()` 用 `dataclasses.asdict` 序列化，`from_dict()` 把 `id` 转 int、`title` 转 str，并在缺少 `done` 时默认 False。",
+      "evidence": [
+        {
+          "file": "todo_cli/models.py",
+          "lines": [
+            9,
+            30
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F13",
+      "kind": "module",
+      "statement": "`todo_cli/cli.py` 承担命令解析与执行：`build_parser` 构建参数、`_find_task` 按 id 线性查找任务（找不到返回 None）、`main` 执行单个命令并返回退出码。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            14,
+            58
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F14",
+      "kind": "feature",
+      "statement": "查找任务（done/delete）使用 `_find_task` 遍历任务列表比较 `task.id`，找不到时在 done/delete 分支之前统一输出 `Task {id} not found.` 并返回 1，因此这两个子命令在任务缺失时退出码为 1。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            43,
+            49
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            77,
+            80
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F15",
+      "kind": "limitation",
+      "statement": "`main` 的命令分派只覆盖 add/list/done/delete 四个子命令，其余情况通过 `parser.error` 处理；`--data` 只作用于当前文件，无并发/加锁机制，`save` 整体覆盖写整个 JSON 文件。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            60,
+            95
+          ]
+        },
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            26,
+            36
+          ]
+        }
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "unknowns": [
+    "未确认是否有单元测试或 CI 配置（manifest 中无 tests 目录或 CI 文件）",
+    "未确认数据文件损坏（非合法 JSON）时的行为，源码中 `json.load` 未做异常捕获",
+    "未确认是否支持并发进程同时写入同一数据文件",
+    "README 与 LICENSE 是否存在未在 manifest 中体现"
+  ]
+}
