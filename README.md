@@ -148,6 +148,8 @@ docgen-workflow/
 ├─ scripts/make_report.py # 从运行产物生成静态 HTML 查看页
 ├─ demo/                 # 真实运行 + Mock 三场景产物 + index.html
 ├─ DESIGN.md             # 设计文档
+├─ Desgin.md             # 对应 PPT 中文件名的入口页
+├─ SUBMISSION_CHECKLIST.md # 提交清单
 ├─ .env.example
 └─ requirements.txt      # 无第三方依赖
 ```
@@ -171,3 +173,13 @@ docgen-workflow/
 - 目前不支持并行 Agent 或网页界面；这些是后续扩展点。
 - 生成内容仍可能遗漏信息；发布前建议按 `analysis.json` 抽查证据，尤其是命令、参数和限制。
 - 真实模型调用会产生费用；Mock 模式完全离线、无费用。
+
+## 9. 提交材料
+
+- **源代码仓库**：本目录 `docgen-workflow/`，本地 Git `main` 分支，可推送到 GitHub/Gitee。
+- **项目说明**：`README.md`
+- **设计文档**：`DESIGN.md`；`Desgin.md` 是对应 PPT 文件名的入口页。
+- **提交清单**：`SUBMISSION_CHECKLIST.md`，包含 PPT 要求对照、推送命令和提交前检查。
+- **备份压缩包**：`../2412190310李文宇.zip`，已排除 `.env`、`.git`、`runs/` 和缓存。
+- **演示查看页**：`demo/index.html`（静态报告，不是工作流的一部分）。
+- **密钥**：只保存在本地 `.env`，已被 `.gitignore` 忽略，请勿提交。
