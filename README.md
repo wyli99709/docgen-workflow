@@ -1,7 +1,5 @@
 # 代码文档生成 Agent Workflow
 
-SE2026 Homework 2 · 2412190310 李文宇
-
 一个由 **3 个 Agent** 协作的文档生成工作流：读取一个小型 Python 命令行项目，产出带源码证据的 README，并由审核 Agent 独立核对。整个项目只使用 Python 标准库，不需要安装任何第三方包。
 
 ## 1. 项目目标
@@ -172,11 +170,3 @@ docgen-workflow/
 - 生成内容仍可能遗漏信息；发布前建议按 `analysis.json` 抽查证据，尤其是命令、参数和限制。
 - 真实模型调用会产生费用；Mock 模式完全离线、无费用。
 
-## 9. 提交材料
-
-- **源代码仓库**：本目录 `docgen-workflow/`，本地 Git `main` 分支，可推送到 GitHub/Gitee。
-- **项目说明**：`README.md`
-- **设计文档**：`DESIGN.md`（PPT 中写作 `Desgin.md`，以本文件为准）。
-- **备份压缩包**：`../2412190310李文宇.zip`，已排除 `.env`、`.git`、`runs/` 和缓存。
-- **演示查看页**：`demo/index.html`（静态报告，不是工作流的一部分）。
-- **密钥**：只保存在本地 `.env`，已被 `.gitignore` 忽略，请勿提交。
