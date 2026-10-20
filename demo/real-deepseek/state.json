@@ -1,5 +1,5 @@
 {
-  "run_id": "20261020-085640",
+  "run_id": "20261020-092540",
   "input_dir": "examples/todo_cli",
   "output_dir": "demo/real-deepseek",
   "model": "deepseek-flash",
@@ -382,7 +382,7 @@
     {
       "id": "F1",
       "kind": "entrypoint",
-      "statement": "程序通过 `python -m todo_cli` 启动：`todo_cli/__main__.py` 从 `.cli` 导入 `main`，并在 `__main__` 保护下执行 `raise SystemExit(main())`，用 main 的返回值作为进程退出码。",
+      "statement": "可通过 `python -m todo_cli` 启动：`__main__.py` 从 `.cli` 导入 `main`，并在 `__main__` 保护下执行 `raise SystemExit(main())`。",
       "evidence": [
         {
           "file": "todo_cli/__main__.py",
@@ -396,13 +396,13 @@
     },
     {
       "id": "F2",
-      "kind": "entrypoint",
-      "statement": "`pyproject.toml` 只定义 build-system 与 project 元数据（name=todo-cli、version=0.1.0），没有 `[project.scripts]` 控制台脚本入口，因此安装后不提供 `todo` 命令，需用 `python -m todo_cli` 运行。",
+      "kind": "metadata",
+      "statement": "`pyproject.toml` 声明项目名为 `todo-cli`，版本 `0.1.0`，描述为 “A minimal local command-line todo manager.”，包发现范围为 `where = [\".\"]`、`include = [\"todo_cli*\"]`。",
       "evidence": [
         {
           "file": "pyproject.toml",
           "lines": [
-            1,
+            5,
             14
           ]
         }
@@ -412,13 +412,13 @@
     {
       "id": "F3",
       "kind": "dependency",
-      "statement": "项目要求 Python >=3.11（`requires-python = \">=3.11\"`），运行时 `dependencies = []` 为空，仅使用标准库；构建依赖为 `setuptools>=61`，后端 `setuptools.build_meta`，并使用 `[tool.setuptools.packages.find]` 的 `include = [\"todo_cli*\"]` 发现包。",
+      "statement": "`pyproject.toml` 要求 Python `>=3.11`，`dependencies = []`（无第三方运行时依赖）；构建使用 `setuptools>=61` 与 `setuptools.build_meta` 后端。",
       "evidence": [
         {
           "file": "pyproject.toml",
           "lines": [
             1,
-            14
+            10
           ]
         }
       ],
@@ -426,14 +426,14 @@
     },
     {
       "id": "F4",
-      "kind": "command",
-      "statement": "CLI 由 `build_parser()` 用 `argparse.ArgumentParser(prog=\"todo\", description=\"A minimal local command-line todo manager.\")` 构建；全局选项 `--data` 指定 JSON 数据文件路径，默认值来自 `DEFAULT_DATA_FILE = \"todo.json\"`；子命令通过 `add_subparsers(dest=\"command\", required=True)` 注册，必须显式指定一个子命令。",
+      "kind": "metadata",
+      "statement": "包 `todo_cli` 在 `__init__.py` 中定义 `__version__ = \"0.1.0\"`。",
       "evidence": [
         {
-          "file": "todo_cli/cli.py",
+          "file": "todo_cli/__init__.py",
           "lines": [
-            11,
-            27
+            1,
+            3
           ]
         }
       ],
@@ -442,7 +442,37 @@
     {
       "id": "F5",
       "kind": "command",
-      "statement": "`add` 子命令接收一个位置参数 `title`（新任务标题）；实现中取现有任务最大 id 加 1 作为新 id，创建 `Task(id=next_id, title=args.title)`（done 默认 False），追加并保存，输出 `Added task {id}: {title}`，返回退出码 0。",
+      "statement": "`build_parser()` 创建 `prog=\"todo\"` 的 argparse 解析器，注册全局选项 `--data`，其默认值为 `DEFAULT_DATA_FILE = \"todo.json\"`，帮助文本为 “Path to the JSON data file (default: todo.json).”。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            11,
+            25
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F6",
+      "kind": "command",
+      "statement": "子命令通过 `add_subparsers(dest=\"command\", required=True)` 注册，必须提供子命令；共有 `add`、`list`、`done`、`delete` 四个子命令。",
+      "evidence": [
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            27,
+            38
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F7",
+      "kind": "command",
+      "statement": "`todo add <title>` 接受一个位置参数 `title`；实现取现有任务最大 id 加 1（无任务时为 1）创建新 `Task`，追加后保存，输出 `Added task {id}: {title}` 并返回退出码 0。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
@@ -462,9 +492,9 @@
       "confidence": "high"
     },
     {
-      "id": "F6",
+      "id": "F8",
       "kind": "command",
-      "statement": "`list` 子命令无参数；任务为空时输出 `No tasks yet.` 并返回 0，否则逐条输出 `[{x| }] {id}. {title}`（已完成标记为 `x`，未完成为空格），返回 0。",
+      "statement": "`todo list` 无参数；任务为空时输出 `No tasks yet.` 并返回 0，否则逐条输出 `[x] {id}. {title}`（已完成标记 `x`，未完成标记为空格）。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
@@ -484,9 +514,9 @@
       "confidence": "high"
     },
     {
-      "id": "F7",
+      "id": "F9",
       "kind": "command",
-      "statement": "`done` 子命令接收整数位置参数 `task_id`（type=int），把对应任务 `done` 置为 True 并保存，输出 `Completed task {id}: {title}`，返回 0；若任务不存在则输出 `Task {task_id} not found.` 并返回退出码 1。",
+      "statement": "`todo done <task_id>` 接受 `type=int` 的位置参数 `task_id`；将对应任务 `done` 置为 `True` 并保存，输出 `Completed task {id}: {title}` 并返回 0。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
@@ -498,7 +528,7 @@
         {
           "file": "todo_cli/cli.py",
           "lines": [
-            77,
+            82,
             86
           ]
         }
@@ -506,22 +536,15 @@
       "confidence": "high"
     },
     {
-      "id": "F8",
+      "id": "F10",
       "kind": "command",
-      "statement": "`delete` 子命令接收整数位置参数 `task_id`（type=int），从列表中移除对应任务并保存，输出 `Deleted task {id}: {title}`，返回 0；任务不存在时同样输出 `Task {task_id} not found.` 并返回退出码 1。",
+      "statement": "`todo delete <task_id>` 接受 `type=int` 的位置参数 `task_id`；从列表移除该任务并保存，输出 `Deleted task {id}: {title}` 并返回 0。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
           "lines": [
             37,
             38
-          ]
-        },
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            77,
-            80
           ]
         },
         {
@@ -535,111 +558,22 @@
       "confidence": "high"
     },
     {
-      "id": "F9",
-      "kind": "configuration",
-      "statement": "`main(argv)` 按 `args.data` 构造 `TaskStore(Path(args.data))` 并先调用 `store.load()` 载入任务，再按 `args.command` 分派；未匹配任何命令时调用 `parser.error(f\"Unsupported command: {args.command}\")` 并返回 2。",
-      "evidence": [
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            52,
-            58
-          ]
-        },
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            94,
-            95
-          ]
-        }
-      ],
-      "confidence": "high"
-    },
-    {
-      "id": "F10",
-      "kind": "data",
-      "statement": "任务以 JSON 数组形式保存在单个文件中（默认 `todo.json`，可用 `--data` 覆盖）：`TaskStore.save` 先 `mkdir(parents=True, exist_ok=True)` 创建父目录，再以 UTF-8 写入 `json.dump([task.to_dict() ...], ensure_ascii=False, indent=2)`。",
-      "evidence": [
-        {
-          "file": "todo_cli/storage.py",
-          "lines": [
-            26,
-            36
-          ]
-        },
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            11,
-            11
-          ]
-        },
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            21,
-            25
-          ]
-        }
-      ],
-      "confidence": "high"
-    },
-    {
       "id": "F11",
-      "kind": "data",
-      "statement": "`TaskStore.load` 在数据文件不存在时直接返回空列表；文件存在时以 UTF-8 读取并用 `Task.from_dict` 逐项转换为 Task 列表。",
-      "evidence": [
-        {
-          "file": "todo_cli/storage.py",
-          "lines": [
-            17,
-            24
-          ]
-        }
-      ],
-      "confidence": "high"
-    },
-    {
-      "id": "F12",
-      "kind": "module",
-      "statement": "`todo_cli/models.py` 以 `@dataclass` 定义 `Task`，字段为 `id: int`、`title: str`、`done: bool = False`；`to_dict()` 用 `dataclasses.asdict` 序列化，`from_dict()` 把 `id` 转 int、`title` 转 str，并在缺少 `done` 时默认 False。",
-      "evidence": [
-        {
-          "file": "todo_cli/models.py",
-          "lines": [
-            9,
-            30
-          ]
-        }
-      ],
-      "confidence": "high"
-    },
-    {
-      "id": "F13",
-      "kind": "module",
-      "statement": "`todo_cli/cli.py` 承担命令解析与执行：`build_parser` 构建参数、`_find_task` 按 id 线性查找任务（找不到返回 None）、`main` 执行单个命令并返回退出码。",
-      "evidence": [
-        {
-          "file": "todo_cli/cli.py",
-          "lines": [
-            14,
-            58
-          ]
-        }
-      ],
-      "confidence": "high"
-    },
-    {
-      "id": "F14",
-      "kind": "feature",
-      "statement": "查找任务（done/delete）使用 `_find_task` 遍历任务列表比较 `task.id`，找不到时在 done/delete 分支之前统一输出 `Task {id} not found.` 并返回 1，因此这两个子命令在任务缺失时退出码为 1。",
+      "kind": "command",
+      "statement": "`main()` 先解析参数、按 `--data` 路径创建 `TaskStore` 并 `load()`；对 `done`/`delete` 先用 `_find_task` 查找任务，找不到时输出 `Task {id} not found.` 并返回退出码 1。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
           "lines": [
             43,
             49
+          ]
+        },
+        {
+          "file": "todo_cli/cli.py",
+          "lines": [
+            52,
+            58
           ]
         },
         {
@@ -653,17 +587,70 @@
       "confidence": "high"
     },
     {
-      "id": "F15",
+      "id": "F12",
       "kind": "limitation",
-      "statement": "`main` 的命令分派只覆盖 add/list/done/delete 四个子命令，其余情况通过 `parser.error` 处理；`--data` 只作用于当前文件，无并发/加锁机制，`save` 整体覆盖写整个 JSON 文件。",
+      "statement": "`main()` 末尾对未匹配的命令调用 `parser.error(f\"Unsupported command: {args.command}\")` 并返回 2，但由于子命令 `required=True` 且四个分支都已处理后返回，该分支实际不可达。",
       "evidence": [
         {
           "file": "todo_cli/cli.py",
           "lines": [
-            60,
+            94,
             95
           ]
-        },
+        }
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "F13",
+      "kind": "module",
+      "statement": "`Task` 是 dataclass，字段为 `id: int`、`title: str`、`done: bool = False`；`to_dict()` 通过 `dataclasses.asdict` 序列化。",
+      "evidence": [
+        {
+          "file": "todo_cli/models.py",
+          "lines": [
+            9,
+            20
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F14",
+      "kind": "feature",
+      "statement": "`Task.from_dict()` 从 JSON 对象构造任务：`id` 和 `title` 为必需键并强制转换类型，`done` 缺省时取 `False`。",
+      "evidence": [
+        {
+          "file": "todo_cli/models.py",
+          "lines": [
+            22,
+            30
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F15",
+      "kind": "data",
+      "statement": "`TaskStore.load()` 以 UTF-8 读取 JSON 文件，文件中缺失时返回空列表 `[]`，否则把顶层 JSON 数组逐项转换为 `Task`。",
+      "evidence": [
+        {
+          "file": "todo_cli/storage.py",
+          "lines": [
+            17,
+            24
+          ]
+        }
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "F16",
+      "kind": "data",
+      "statement": "`TaskStore.save()` 会先 `mkdir(parents=True, exist_ok=True)` 创建父目录，再以 UTF-8 写出 JSON 数组，使用 `ensure_ascii=False` 与 `indent=2`（整文件全量覆盖写入）。",
+      "evidence": [
         {
           "file": "todo_cli/storage.py",
           "lines": [
@@ -672,16 +659,17 @@
           ]
         }
       ],
-      "confidence": "medium"
+      "confidence": "high"
     }
   ],
   "unknowns": [
-    "未确认是否有单元测试或 CI 配置（manifest 中无 tests 目录或 CI 文件）",
-    "未确认数据文件损坏（非合法 JSON）时的行为，源码中 `json.load` 未做异常捕获",
-    "未确认是否支持并发进程同时写入同一数据文件",
-    "README 与 LICENSE 是否存在未在 manifest 中体现"
+    "是否存在并发或多次同时写入场景的处理策略（源码中无锁、无原子写）",
+    "是否有测试文件或 CI 配置（manifest 中未列出）",
+    "argparse 对非法参数/非整型 task_id 的具体退出码未在源码中显式定义",
+    "读取到损坏或非数组 JSON 时的行为未做显式处理",
+    "是否计划发布到 PyPI 或提供 console_scripts 命令入口（pyproject 未声明）"
   ],
-  "draft": "# todo-cli\n\n## 项目用途\n\ntodo-cli 是一个本地命令行待办事项管理器，使用 Python 实现，版本 0.1.0 [F2]。任务保存在单个 JSON 文件中，默认文件名 `todo.json`，也可用全局选项 `--data` 指定其他路径 [F4][F10]。程序提供四个子命令：\n\n- `add`：新增任务，id 取现有最大 id 加 1，`done` 默认 False [F5]\n- `list`：列出全部任务，已完成的用 `x` 标记 [F6]\n- `done`：把指定 id 的任务标记为完成 [F7]\n- `delete`：按 id 删除任务 [F8]\n\n程序通过 `python -m todo_cli` 启动 [F1]，不使用网络，也不依赖第三方运行时库 [F3]。\n\n## 安装\n\n**无需安装即可运行**：`pyproject.toml` 中 `dependencies = []`，运行时只用标准库 [F3]；只要在包含 `todo_cli/` 包的源码根目录执行 `python -m todo_cli` 即可 [F1]。\n\n**前置条件**：Python >= 3.11（`requires-python = \">=3.11\"`）[F3]。\n\n**需要安装的情况**：项目使用 setuptools 构建，构建依赖 `setuptools>=61`，后端为 `setuptools.build_meta`，并通过 `[tool.setuptools.packages.find]` 的 `include = [\"todo_cli*\"]` 发现包 [F3]。具体安装命令（例如用 pip 安装源码目录）未在事实清单中给出，**待确认**。\n\n**注意**：`pyproject.toml` 只定义 build-system 与 project 元数据，没有 `[project.scripts]` 控制台脚本入口 [F2]。因此即使安装完成也不会提供 `todo` 命令，仍需使用 `python -m todo_cli` 运行 [F2]。\n\n## 使用方法\n\n以下命令均在**源码根目录**（包含 `todo_cli/` 的目录）执行：\n\n```bash\n# 新增任务\npython -m todo_cli add \"写 README\"\n\n# 查看全部任务\npython -m todo_cli list\n\n# 将 id 为 1 的任务标记为完成\npython -m todo_cli done 1\n\n# 删除 id 为 1 的任务\npython -m todo_cli delete 1\n```\n\n**数据文件位置**：默认是当前工作目录下的 `todo.json`；`save` 时会先 `mkdir(parents=True, exist_ok=True)` 创建父目录，再以 UTF-8 写入格式化 JSON [F10]。若数据文件不存在，`load` 直接返回空列表，不会报错 [F11]。要换文件时使用顶层全局选项 `--data`：\n\n```bash\npython -m todo_cli --data ~/tasks.json list\n```\n\n`--data` 只定义在顶层解析器上，四个子解析器都没有该选项 [F4]，因此**必须写在子命令之前**；写成 `python -m todo_cli list --data x` 会被 argparse 判为未识别参数，打印 usage 并以退出码 2 结束 [F4][F9]。\n\n**子命令必须显式指定**：子解析器通过 `add_subparsers(dest=\"command\", required=True)` 注册 [F4]。未知子命令在 `parse_args` 阶段就被 argparse 直接拒绝（打印 usage、退出码 2），不会进入 `main` 的分派逻辑；`cli.py` 末尾的 `parser.error(\"Unsupported command: ...\")` 兜底分支因此实际上不可达 [F4][F9]。\n\n**输出与退出码**：\n\n- `add` 输出 `Added task {id}: {title}`，退出码 0 [F5]\n- `list` 无任务时输出 `No tasks yet.`；否则每行 `[x] {id}. {title}` 或 `[ ] {id}. {title}`，退出码 0 [F6]\n- `done` 输出 `Completed task {id}: {title}`，退出码 0 [F7]\n- `delete` 输出 `Deleted task {id}: {title}`，退出码 0 [F8]\n- `done`、`delete` 指定的 id 不存在时输出 `Task {id} not found.`，退出码 1 [F7][F8][F14]\n- 参数错误（未知子命令、`--data` 位置错误等）退出码 2 [F9]\n\n## 主要模块\n\n- `pyproject.toml`：构建与项目元数据（name=todo-cli、version=0.1.0、requires-python>=3.11），声明 setuptools 构建后端与包发现规则，无控制台脚本入口 [F2][F3]。\n- `todo_cli/__main__.py`：`python -m todo_cli` 的入口，从 `.cli` 导入 `main`，用 `raise SystemExit(main())` 把返回值作为进程退出码 [F1]。\n- `todo_cli/cli.py`：命令解析与执行。`build_parser()` 构建解析器、`--data` 全局选项与四个子命令 [F4]；`_find_task()` 按 id 线性查找，找不到返回 None [F13][F14]；`main(argv)` 先按 `args.data` 构造 `TaskStore(Path(args.data))` 并 `load()`，再按 `args.command` 分派并返回退出码 [F9]。\n- `todo_cli/models.py`：以 `@dataclass` 定义 `Task`，字段 `id: int`、`title: str`、`done: bool = False`；`to_dict()` 用 `dataclasses.asdict` 序列化，`from_dict()` 把 `id` 转 int、`title` 转 str，缺少 `done` 时默认 False [F12]。\n- `todo_cli/storage.py`：持久化层。`load()` 在文件不存在时返回空列表，存在时以 UTF-8 读取并逐项转成 `Task` [F11]；`save()` 创建父目录后以 UTF-8 整体写入格式化 JSON（`ensure_ascii=False, indent=2`）[F10]。\n- `todo_cli/__init__.py`：包初始化文件，仅包含模块 docstring 与版本声明 `__version__ = \"0.1.0\"`（与 `pyproject.toml` 的 version 一致 [F2]），不导出 `main` 等其他符号。\n\n## 已知限制\n\n- **没有 `todo` 命令**：未定义 `[project.scripts]`，只能通过 `python -m todo_cli` 调用 [F2]。\n- **命令集有限**：分派逻辑只覆盖 `add`、`list`、`done`、`delete` 四个子命令，没有编辑标题、清除已完成项、过滤查询之类的功能 [F15]。\n- **`--data` 位置固定**：它只是顶层选项，必须写在子命令之前，不能放在 `list --data ...` 这样的位置 [F4]。\n- **单文件整体覆盖写**：所有任务存在一个 JSON 数组里，每次 `save` 都重写整个文件，任务越多写入开销越大 [F10][F15]。\n- **无并发控制**：`save` 没有任何加锁机制，多个进程同时写同一数据文件可能互相覆盖；`--data` 也只影响当前这次调用 [F15]（该结论为中等置信度）。\n- **数据文件损坏时直接崩溃**：`load()` 只判断文件是否存在，随后直接 `json.load`，没有 try/except [F11]；`from_dict()` 只对 `done` 提供默认值 [F12]。因此文件不是合法 JSON、或数组元素缺少 `id`/`title` 字段时，不会给出友好提示，而是抛出 `JSONDecodeError`/`KeyError` 并以 traceback 终止进程。\n- **测试与 CI 情况未确认**：manifest 中没有 tests 目录或 CI 配置文件，是否存在单元测试及 CI 流程**待确认**，需要查看仓库完整文件列表。\n- **README 与 LICENSE**：manifest 中未体现这两个文件，是否随仓库提供**待确认**。",
+  "draft": "# todo-cli\n\n## 项目用途\n\n`todo-cli` 是一个极简的本地命令行待办事项管理器，项目描述为 “A minimal local command-line todo manager.”，当前版本 `0.1.0` [F2][F4]。所有任务保存在一个本地 JSON 文件中，默认文件名为 `todo.json` [F5][F15][F16]。\n\n命令行提供四个子命令：`add`、`list`、`done`、`delete` [F6]，分别用于新增任务、查看列表、标记完成和删除任务。任务模型包含 `id`、`title`、`done` 三个字段 [F13]。\n\n## 安装\n\n**无需安装，直接运行**\n\n- 要求 Python `>=3.11` [F3]。\n- 项目没有第三方运行时依赖（`dependencies = []`），只使用标准库 [F3]。\n- 在包含 `todo_cli` 包的仓库根目录下，可直接用 `python -m todo_cli` 启动：`__main__.py` 从 `.cli` 导入 `main`，并在 `__main__` 保护下执行 `raise SystemExit(main())` [F1]。\n\n**需要安装为包时**\n\n- `pyproject.toml` 声明构建使用 `setuptools>=61` 与 `setuptools.build_meta` 后端 [F3]，包发现范围为 `where = [\".\"]`、`include = [\"todo_cli*\"]` [F2]，可按常规 setuptools 流程构建。项目文件未显式给出安装命令，具体命令待确认。\n- 项目**未声明 `console_scripts` 入口**，安装后是否会出现 `todo` 可执行命令待确认 [F3]；解析器的 `prog=\"todo\"` 仅作用于帮助信息显示 [F5]。在此之前请统一使用 `python -m todo_cli` 调用 [F1]。\n\n## 使用方法\n\n以下命令均在仓库根目录执行；默认数据文件为当前工作目录下的 `todo.json`（即 `--data` 的默认值）[F1][F5]。\n\n新增一条任务：\n\n```bash\npython -m todo_cli add \"写 README\"\n```\n\n输出 `Added task {id}: {title}`，退出码 0；新任务 id 由现有任务最大 id 加 1 得到（无任务时为 1）[F7]。\n\n查看全部任务：\n\n```bash\npython -m todo_cli list\n```\n\n无任务时输出 `No tasks yet.`；否则逐条输出 `[x] {id}. {title}`，已完成为 `x`，未完成为空格 [F8]。\n\n标记完成与删除（参数为整型 id）：\n\n```bash\npython -m todo_cli done 1\npython -m todo_cli delete 1\n```\n\n分别输出 `Completed task {id}: {title}` 和 `Deleted task {id}: {title}`，退出码 0 [F9][F10]。若 id 不存在，输出 `Task {id} not found.` 并返回退出码 1 [F11]。\n\n指定其他数据文件：\n\n```bash\npython -m todo_cli --data /tmp/my-todo.json list\n```\n\n`--data` 只注册在顶层解析器上 [F5]，四个子命令自身只接受 `title` 或 `task_id` 位置参数 [F6][F7][F9][F10]，因此 `--data` **必须写在子命令之前**；写成 `python -m todo_cli list --data x.json` 会被 argparse 判为未知参数。\n\n## 主要模块\n\n- `pyproject.toml`：项目元数据（名称 `todo-cli`、版本 `0.1.0`、描述）与包发现配置 [F2]，以及 Python 版本要求、空依赖列表和 setuptools 构建后端 [F3]。\n- `todo_cli/__init__.py`：定义 `__version__ = \"0.1.0\"` [F4]。\n- `todo_cli/__main__.py`：模块入口，导入 `main` 并以 `SystemExit` 返回其退出码，支持 `python -m todo_cli` [F1]。\n- `todo_cli/cli.py`：argparse 解析器构建（`prog=\"todo\"`、全局 `--data`、四个必需子命令）[F5][F6]，各子命令的处理逻辑 [F7][F8][F9][F10]，以及 `main()` 中的存储加载、任务查找与“任务不存在”错误返回 [F11]。\n- `todo_cli/models.py`：`Task` dataclass（`id: int`、`title: str`、`done: bool = False`）与 `to_dict()` 序列化 [F13]；`from_dict()` 强制转换 `id`/`title` 类型，`done` 缺省为 `False` [F14]。\n- `todo_cli/storage.py`：`TaskStore.load()` 以 UTF-8 读取 JSON，文件缺失时返回空列表 [F15]；`TaskStore.save()` 创建父目录后以 UTF-8 写出带缩进的 JSON [F16]。\n\n## 已知限制\n\n- 数据存储为单个 JSON 文件的**全量覆盖写入**，每次保存都重写整个文件 [F16]，没有增量写入机制。\n- 源码中未见文件锁或原子写，多进程/多次同时写入时是否丢数据待确认。\n- 读取到损坏或非数组 JSON 时没有显式处理逻辑，实际表现待确认。\n- 新任务 id 取当前所有任务 id 的最大值加 1 [F7]，未保留历史 id 记录：删除当前最大 id 的任务后再新增，会复用该 id；被删除的非最大 id 不会被复用，直到它再次成为最大值。\n- 命令集只有 `add`、`list`、`done`、`delete` 四个子命令 [F6]，没有编辑、搜索、清除已完成等命令。\n- `main()` 末尾的 `Unsupported command` 分支因 `add_subparsers(required=True)` 且四个分支均已返回，实际不可达 [F12]。\n- argparse 对非法参数或非整型 `task_id` 的具体退出码未在源码中显式定义，待确认。\n- 文件清单中未包含测试文件或 CI 配置，是否有测试与持续集成待确认。\n- 未声明 `console_scripts` 入口，安装后是否提供 `todo` 命令以及是否计划发布到 PyPI 均待确认 [F3]。",
   "draft_version": 2,
   "review_verdict": "pass",
   "review_issues": [],
@@ -696,32 +684,18 @@
       "verdict": "revise",
       "issues": [
         {
-          "severity": "medium",
-          "claim": "「数据文件损坏时的行为未确认：json.load 未做异常捕获，遇到非合法 JSON 时的具体表现待确认，需要补充测试或源码确认。」",
-          "problem": "该限制完全可以从源码确认，却留成待确认，且未写入已知限制；实际上数据文件非法时程序会以未捕获异常崩溃。",
-          "evidence": "todo_cli/storage.py:20-24 中 load() 仅判断文件是否存在，随后直接 json.load(handle)，无 try/except；models.py:26-30 的 from_dict 也未容错，缺少 id/title 会抛 KeyError。因此遇到非法 JSON 或结构缺失会抛出 JSONDecodeError/KeyError，进程以 traceback 结束（退出码 1），而不是友好的错误信息。",
-          "suggestion": "把这条从「待确认」移到已知限制，写明：数据文件不是合法 JSON（或缺少 id/title 字段）时不会给出友好提示，会直接抛出异常并以 traceback 终止；同时删除相应的「待确认」表述。"
-        },
-        {
-          "severity": "medium",
-          "claim": "「命中的命令不属于已知子命令时，调用 parser.error，退出码 2 [F9]」以及已知限制「其余情况交给 parser.error 处理 [F15]」",
-          "problem": "该分支实际不可达：子命令由 required=True 的 subparsers 注册，未知子命令在 parse_args 阶段就被 argparse 拒绝并以退出码 2 结束，根本不会进入 main 的分派逻辑。草稿把机制说错了。",
-          "evidence": "todo_cli/cli.py:27 使用 add_subparsers(dest=\"command\", required=True)，cli.py:56 parse_args 先于任何分派执行；cli.py:94 的 parser.error(\"Unsupported command: ...\") 只在 args.command 既不是 add/list/done/delete 时才会执行，而 argparse 已保证这一点。",
-          "suggestion": "改为：未知子命令由 argparse 直接拒绝，退出码 2 并打印 usage；cli.py 末尾的 parser.error 分支实际上不可达。相应修改退出码说明和已知限制条目。"
+          "severity": "low",
+          "claim": "已知限制：“任务 id 取自当前最大 id 加 1 [F7]，删除任务后 id 是否被复用未在源码中说明，待确认。”",
+          "problem": "该行为在源码中已确定：新 id 取当前所有任务 id 最大值 +1，因此删除当前最大 id 的任务后再 add，会复用该 id；草稿把它写成“待确认”，与源码可推导的结论不符。",
+          "evidence": "todo_cli/cli.py:61 使用 next_id = max((task.id for task in tasks), default=0) + 1，未保留任何历史 id 记录",
+          "suggestion": "把该条改为确定性描述：删除当前最大 id 的任务后，新增任务会复用该 id；其余被删除的非最大 id 不会被复用，直到它再次成为最大值。"
         },
         {
           "severity": "low",
-          "claim": "「该选项是否必须写在子命令之前，待确认（示例按 argparse 全局选项的惯用位置写在最前）」",
-          "problem": "这一点可以从源码确认，不需要标为待确认。`--data` 只定义在顶层解析器上，子命令解析器没有这个选项，所以必须写在子命令之前，否则 argparse 报错并以退出码 2 结束。",
-          "evidence": "todo_cli/cli.py:21-25 的 --data 只加在顶层 parser 上；cli.py:29-38 的 add/list/done/delete 子解析器都未添加 --data，因此 `python -m todo_cli list --data x` 会被判为未识别参数。",
-          "suggestion": "改为明确说明：`--data` 是顶层全局选项，必须写在子命令之前（如 `python -m todo_cli --data ~/tasks.json list`），写在子命令之后会报错退出码 2。"
-        },
-        {
-          "severity": "low",
-          "claim": "「todo_cli/__init__.py：包初始化文件，其具体内容未在事实清单中说明，待确认。」",
-          "problem": "该文件内容已可读取确认，不应留成待确认（事实清单缺这条，但源码已给出答案）。",
-          "evidence": "todo_cli/__init__.py:1-3 内容为模块 docstring \"\"\"A minimal local command-line todo manager.\"\"\" 与 __version__ = \"0.1.0\"，没有导出 main 或其他符号。",
-          "suggestion": "改写为：包初始化文件，仅包含模块 docstring 和 `__version__ = \"0.1.0\"`，不导出其他符号。"
+          "claim": "使用方法：“以上示例把 --data 放在子命令之前；放在子命令之后是否被接受，源码中未说明，待确认。”",
+          "problem": "--data 只注册在顶层解析器上，add/list/done/delete 子解析器均未定义该选项（也未使用 parents 继承），因此写在子命令之后不会被接受；源码足以确定这一点，不需要标为待确认。",
+          "evidence": "todo_cli/cli.py:21-25 仅在顶层 parser 注册 --data；todo_cli/cli.py:29-38 各子解析器只注册了 title / task_id，未继承 --data",
+          "suggestion": "改为明确说明：--data 必须写在子命令之前（如 `python -m todo_cli --data x.json list`），写在子命令之后会被 argparse 判为未知参数。"
         }
       ]
     },
@@ -744,42 +718,42 @@
   ],
   "events": [
     {
-      "ts": "2026-10-20T00:56:40+00:00",
+      "ts": "2026-10-20T01:25:40+00:00",
       "event": "run_start",
       "node": null,
       "summary": "model=deepseek-flash"
     },
     {
-      "ts": "2026-10-20T00:56:40+00:00",
+      "ts": "2026-10-20T01:25:40+00:00",
       "event": "node_start",
       "node": "scan",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:56:40+00:00",
+      "ts": "2026-10-20T01:25:40+00:00",
       "event": "scan",
       "node": "scan",
       "summary": "6 个文件",
       "digest": "fd18bc3121a8"
     },
     {
-      "ts": "2026-10-20T00:56:40+00:00",
+      "ts": "2026-10-20T01:25:40+00:00",
       "event": "node_end",
       "node": "scan",
       "summary": "",
       "duration_ms": 16
     },
     {
-      "ts": "2026-10-20T00:56:40+00:00",
+      "ts": "2026-10-20T01:25:40+00:00",
       "event": "node_start",
       "node": "analyze",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:56:57+00:00",
+      "ts": "2026-10-20T01:25:56+00:00",
       "event": "analyze",
       "node": "analyze",
-      "summary": "15 条事实",
+      "summary": "16 条事实",
       "facts": [
         "F1",
         "F2",
@@ -795,201 +769,202 @@
         "F12",
         "F13",
         "F14",
-        "F15"
+        "F15",
+        "F16"
       ]
     },
     {
-      "ts": "2026-10-20T00:56:57+00:00",
+      "ts": "2026-10-20T01:25:56+00:00",
       "event": "node_end",
       "node": "analyze",
       "summary": "",
-      "duration_ms": 16765
+      "duration_ms": 16781
     },
     {
-      "ts": "2026-10-20T00:56:57+00:00",
+      "ts": "2026-10-20T01:25:56+00:00",
       "event": "node_start",
       "node": "write",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:57:07+00:00",
+      "ts": "2026-10-20T01:26:08+00:00",
       "event": "write",
       "node": "write",
       "summary": "第 1 版草稿",
-      "chars": 3125,
+      "chars": 2839,
       "feedback_items": 0
     },
     {
-      "ts": "2026-10-20T00:57:07+00:00",
+      "ts": "2026-10-20T01:26:08+00:00",
       "event": "node_end",
       "node": "write",
       "summary": "",
-      "duration_ms": 10405
+      "duration_ms": 11671
     },
     {
-      "ts": "2026-10-20T00:57:07+00:00",
+      "ts": "2026-10-20T01:26:08+00:00",
       "event": "node_start",
       "node": "review",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "review",
       "node": "review",
-      "summary": "revise，4 条问题",
+      "summary": "revise，2 条问题",
       "draft_version": 1
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_end",
       "node": "review",
       "summary": "",
-      "duration_ms": 28313
+      "duration_ms": 24983
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_start",
       "node": "rules",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "rules",
       "node": "rules",
       "summary": "0 条机械校验问题",
       "draft_version": 1
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_end",
       "node": "rules",
       "summary": "",
-      "duration_ms": 16
+      "duration_ms": 0
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "route",
       "node": "rules",
       "summary": "",
       "target": "revise"
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_start",
       "node": "revise",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "revise",
       "node": "revise",
       "summary": "第 1 次返工",
-      "feedback_items": 4
+      "feedback_items": 2
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_end",
       "node": "revise",
       "summary": "",
       "duration_ms": 0
     },
     {
-      "ts": "2026-10-20T00:57:36+00:00",
+      "ts": "2026-10-20T01:26:33+00:00",
       "event": "node_start",
       "node": "write",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:57:50+00:00",
+      "ts": "2026-10-20T01:26:41+00:00",
       "event": "write",
       "node": "write",
       "summary": "第 2 版草稿",
-      "chars": 3834,
-      "feedback_items": 4
+      "chars": 2924,
+      "feedback_items": 2
     },
     {
-      "ts": "2026-10-20T00:57:50+00:00",
+      "ts": "2026-10-20T01:26:41+00:00",
       "event": "node_end",
       "node": "write",
       "summary": "",
-      "duration_ms": 14125
+      "duration_ms": 7704
     },
     {
-      "ts": "2026-10-20T00:57:50+00:00",
+      "ts": "2026-10-20T01:26:41+00:00",
       "event": "node_start",
       "node": "review",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "review",
       "node": "review",
       "summary": "pass，0 条问题",
       "draft_version": 2
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "node_end",
       "node": "review",
       "summary": "",
-      "duration_ms": 23625
+      "duration_ms": 9545
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "node_start",
       "node": "rules",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "rules",
       "node": "rules",
       "summary": "0 条机械校验问题",
       "draft_version": 2
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "node_end",
       "node": "rules",
       "summary": "",
       "duration_ms": 0
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "route",
       "node": "rules",
       "summary": "",
       "target": "finalize_pass"
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "node_start",
       "node": "finalize_pass",
       "summary": ""
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "finalize",
       "node": "finalize_pass",
       "summary": "通过"
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "node_end",
       "node": "finalize_pass",
       "summary": "",
-      "duration_ms": 15
+      "duration_ms": 0
     },
     {
-      "ts": "2026-10-20T00:58:13+00:00",
+      "ts": "2026-10-20T01:26:50+00:00",
       "event": "run_end",
       "node": null,
       "summary": "passed",
-      "facts": 15,
+      "facts": 16,
       "revisions": 1
     }
   ],
   "errors": [],
-  "started_at": "2026-10-20T00:56:40+00:00",
-  "finished_at": "2026-10-20T00:58:13+00:00"
+  "started_at": "2026-10-20T01:25:40+00:00",
+  "finished_at": "2026-10-20T01:26:50+00:00"
 }

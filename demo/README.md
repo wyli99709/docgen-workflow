@@ -4,8 +4,8 @@
 
 | 目录 | 类型 | 结果 | 关键证据 |
 | --- | --- | --- | --- |
-| `real-deepseek/` | 真实模型 | passed，15 条事实，1 次返工 | `review.json` 的两轮 review/rules；`trace.jsonl` 中 23 次模型调用、17 次工具调用 |
-| `real-deepseek-json/` | 真实模型（JSON 模式） | passed，18 条事实，0 次返工 | `drafts/draft-v1.md`；14 次模型调用、11 次工具调用 |
+| `real-deepseek/` | 真实模型（最终代码） | passed，16 条事实，1 次返工 | `drafts/draft-v1.md` 与 `draft-v2.md`；`review.json` 的两轮 review/rules；`trace.jsonl` 中 20 次模型调用、15 次工具调用 |
+| `real-deepseek-json/` | 真实模型（最终代码） | passed，15 条事实，0 次返工 | `drafts/draft-v1.md`；18 次模型调用、13 次工具调用 |
 | `mock-pass/` | 离线 Mock | passed，0 次返工 | 三条路径的基准 |
 | `mock-rework/` | 离线 Mock | passed，1 次返工 | `drafts/draft-v1.md` 与 `draft-v2.md` 可对比 |
 | `mock-fail/` | 离线 Mock | needs_manual_review | `README.rejected.md`、`review.json` 中的两轮问题 |

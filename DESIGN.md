@@ -142,7 +142,7 @@ return "finalize_fail"
 }
 ```
 
-- 校验器强制：`pass` 时 `issues` 为空；`revise` 时至少一条问题；每条问题字段完整。
+- 校验器强制：`pass` 时 `issues` 为空；`revise` 时至少一条问题；每条问题字段完整，且 `evidence` 必须包含真实存在的 `文件:行号`，否则要求模型修正。
 - 审核 Agent 有自己的工具循环和提示词，不复用分析 Agent 的结论作为最终依据。
 
 ### 5.4 工具调用协议
@@ -219,17 +219,18 @@ running ──► passed
    └──► failed                （模型/协议/工具/工作流异常）
 ```
 
-- HTTP 调用最多 3 次尝试；JSON 解析失败最多 3 次纠正；最终结果校验失败最多 2 次纠正。
+- HTTP 调用最多 3 次尝试；模型返回空正文时适配器自动重试；Agent 层还会追加一次纠正消息。
+- JSON 解析失败最多 3 次纠正；最终结果校验失败最多 2 次纠正。
 - 分析 Agent 最多 12 轮，审核 Agent 最多 12 轮；文档 Agent 最多 2 次生成尝试。
 - 返工最多 1 次，超过上限进入 `finalize_fail`。
 - 异常时保存 `state.json`、`analysis.json`、`review.json`、`trace.jsonl`，并写 `README.rejected.md`（若有草稿）；退出码非 0。
 - 失败状态不会生成 `README.generated.md`。
 
-真实运行中曾出现审核 Agent 连续返回非 JSON 文本的情况；工作流将其记录为 `failed` 并保存日志，没有伪造成功。之后加入 JSON 模式，重新运行恢复通过。
+真实运行中曾出现审核 Agent 连续返回非 JSON 文本的情况；工作流将其记录为 `failed` 并保存日志，没有伪造成功。之后加入 JSON 模式，重新运行恢复通过。另有一次模型返回只有空格的正文，适配器现在会先重试，仍失败才上报。复核时也出现过返工后草稿自相矛盾、审核拒绝发布的情况，最终状态为 `needs_manual_review`；这是预期的失败关闭行为。
 
 ## 11. 测试策略
 
-`python -m unittest discover -s tests`，22 个测试：
+`python -m unittest discover -s tests`，25 个测试：
 
 | 类别 | 覆盖内容 |
 | --- | --- |
@@ -240,6 +241,7 @@ running ──► passed
 | 规则 | 缺少章节、无效引用、无效证据 |
 | Agent 校验 | 分析证据越界、审核 pass 带问题 |
 | JSON | 代码围栏、前后说明文字、嵌套花括号、空响应 |
+| 模型适配器 | 空正文自动重试；重试耗尽后抛出 `LLMError` |
 
 Mock 测试证明编排正确；真实模型运行证明 Agent 确实能工作。两者职责不同，不互相替代。
 
@@ -271,15 +273,15 @@ workflow.add_edge("security", "rules")
 
 | 运行 | 结果 | 说明 |
 | --- | --- | --- |
-| `demo/real-deepseek/` | passed，15 条事实，1 次返工 | 审核首轮提 4 条问题，文档 Agent 返工后第二轮通过；23 次模型调用、17 次工具调用 |
-| `demo/real-deepseek-json/` | passed，18 条事实，0 返工 | 启用 JSON 模式后的首轮通过；14 次模型调用、11 次工具调用；含 `drafts/draft-v1.md` |
+| `demo/real-deepseek/` | passed，16 条事实，1 次返工 | 最终代码；审核首轮提 2 条问题，文档 Agent 返工后第二轮通过；20 次模型调用、15 次工具调用；含 `drafts/draft-v1.md` 与 `draft-v2.md` |
+| `demo/real-deepseek-json/` | passed，15 条事实，0 返工 | 最终代码的全新运行；18 次模型调用、13 次工具调用；含 `drafts/draft-v1.md` |
 
 人工抽查（`demo/real-deepseek/analysis.json`）：
 
 - F1：`todo_cli/__main__.py:1-6`
-- F5：`todo_cli/cli.py:29-30, 60-66`
-- F7：`todo_cli/cli.py:34-35, 77-86`
-- F8：`todo_cli/cli.py:37-38, 77-80, 88-92`
+- F7：`todo_cli/cli.py:29-30, 60-66`
+- F9：`todo_cli/cli.py:34-35, 82-86`
+- F10：`todo_cli/cli.py:37-38, 88-92`
 
 早期真实运行暴露出证据行号偏移（例如 `delete` 引用到 `done` 的实现行），原因是工具当时只返回纯文本，模型需要自己数行。修正为返回 `numbered_text` 并在提示词中加入复核步骤后，行号误差被消除；这是一次由人工验收发现、再回到设计修正的迭代。
 

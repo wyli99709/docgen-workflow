@@ -75,6 +75,10 @@ class OpenAICompatibleAdapter(ModelAdapter):
                     break
             except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
                 last_error = LLMError(f"模型调用失败（agent={agent}）: {exc}")
+            except LLMError as exc:
+                # Empty or malformed content can happen transiently on some
+                # providers; retry the same request instead of failing the run.
+                last_error = exc
             if attempt < 2:
                 time.sleep(1.5 * (attempt + 1))
 
@@ -105,5 +109,10 @@ class OpenAICompatibleAdapter(ModelAdapter):
                 if isinstance(part, dict)
             )
         if not isinstance(content, str) or not content.strip():
-            raise LLMError(f"模型响应内容为空: {json.dumps(data)[:500]}")
+            finish_reason = choices[0].get("finish_reason")
+            raise LLMError(
+                "模型响应内容为空: "
+                f"finish_reason={finish_reason!r}, "
+                f"usage={data.get('usage')!r}"
+            )
         return content

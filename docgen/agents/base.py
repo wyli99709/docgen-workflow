@@ -8,7 +8,7 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
-from ..llm.base import ModelAdapter
+from ..llm.base import LLMError, ModelAdapter
 from ..trace import Trace
 from ..utils.jsonx import extract_json_object, truncate
 
@@ -90,11 +90,36 @@ class ToolLoopAgent:
         ]
         parse_failures = 0
         validation_failures = 0
+        llm_failures = 0
         successful_tool_calls: dict[str, int] = {}
 
         for turn in range(1, self.max_turns + 1):
             started = time.monotonic()
-            raw = self.adapter.complete(messages, agent=self.name, json_mode=True)
+            try:
+                raw = self.adapter.complete(
+                    messages, agent=self.name, json_mode=True
+                )
+            except LLMError as exc:
+                llm_failures += 1
+                self.trace.emit(
+                    "llm_error",
+                    node=self.name,
+                    summary=truncate(str(exc), 500),
+                )
+                if llm_failures > 3:
+                    raise AgentError(
+                        f"{self.name} 多次模型调用失败: {exc}"
+                    ) from exc
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": (
+                            "上一次模型调用没有返回可用正文。请直接返回一个 JSON 对象"
+                            '（"tool" 或 "final"），不要输出空内容。'
+                        ),
+                    }
+                )
+                continue
             duration_ms = int((time.monotonic() - started) * 1000)
             self.trace.emit(
                 "llm_call",
@@ -274,7 +299,17 @@ class WriterAgent:
         ]
         for attempt in range(1, 3):
             started = time.monotonic()
-            raw = self.adapter.complete(messages, agent=self.name)
+            try:
+                raw = self.adapter.complete(messages, agent=self.name)
+            except LLMError as exc:
+                self.trace.emit(
+                    "llm_error",
+                    node=self.name,
+                    summary=truncate(str(exc), 500),
+                )
+                if attempt >= 2:
+                    raise AgentError(f"文档 Agent 模型调用失败: {exc}") from exc
+                continue
             duration_ms = int((time.monotonic() - started) * 1000)
             draft = _strip_code_fence(raw).strip()
             self.trace.emit(

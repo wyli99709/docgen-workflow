@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 from docgen.agents.analyst import make_analyst_validator
-from docgen.agents.reviewer import validate_review
+from docgen.agents.reviewer import make_review_validator, validate_review
 from docgen.checks.rules import validate_draft, validate_facts
 from docgen.state import RunState
 from docgen.tools.ast_index import build_ast_index
@@ -182,6 +182,20 @@ class AgentValidatorTest(unittest.TestCase):
 
     def test_reviewer_accepts_consistent_review(self) -> None:
         self.assertIsNone(validate_review({"verdict": "pass", "issues": []}))
+
+    def test_reviewer_requires_grounded_evidence(self) -> None:
+        sandbox = InputSandbox(SAMPLE)
+        validate = make_review_validator(sandbox)
+        issue = {
+            "severity": "high",
+            "claim": "示例结论",
+            "problem": "具体问题",
+            "evidence": "源码里看起来不对",
+            "suggestion": "修正",
+        }
+        self.assertIsNotNone(validate({"verdict": "revise", "issues": [issue]}))
+        issue["evidence"] = "todo_cli/cli.py:57"
+        self.assertIsNone(validate({"verdict": "revise", "issues": [issue]}))
 
 
 if __name__ == "__main__":

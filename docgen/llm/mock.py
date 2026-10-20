@@ -199,7 +199,7 @@ REVIEW_ISSUE_FAKE_INSTALL = {
     "severity": "high",
     "claim": "安装章节的 pip install todo-cli 命令",
     "problem": "事实清单和 pyproject.toml 都没有提供 pip 安装命令或发布包信息；该命令没有源码证据。",
-    "evidence": "pyproject.toml 只声明项目元数据，未提供 scripts 或发布配置",
+    "evidence": "pyproject.toml:6-14 只声明项目元数据，未提供 scripts 或发布配置",
     "suggestion": "删除该安装命令，或先在事实清单中补充可核验的安装方式。",
 }
 
